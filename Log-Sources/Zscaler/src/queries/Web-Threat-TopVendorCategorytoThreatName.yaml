@@ -1,4 +1,4 @@
-name: Web - Threat - Top Vendor Category to Threat Name
+name: Zscaler - Threat - Top Vendor Category to Threat Name
 visualization:
   options: {}
   type: sankey
@@ -7,7 +7,7 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
+  #Vendor="zscaler" Vendor.product="NSS"
   | Vendor.threatname!="None"
-  | top([Vendor.urlcat, Vendor.threatname])
-  | sankey(source=Vendor.urlcat, target=Vendor.threatname)
+  | top([Vendor.urlcategory, Vendor.threatname])
+  | sankey(source=Vendor.urlcategory, target=Vendor.threatname)

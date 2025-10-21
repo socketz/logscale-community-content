@@ -1,4 +1,4 @@
-name: Web - User - Top Allowed Super Categories Over Time
+name: Zscaler - User - Top Allowed Super Categories Over Time
 visualization:
   options:
     connect-points: false
@@ -9,7 +9,7 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
+  #Vendor="zscaler" Vendor.product="NSS"
   | user.email=~wildcard(?Username, ignoreCase=true)
-  | #Vendor.action=Allowed
-  | timechart(Vendor.urlsupercat, limit=10)
+  | Vendor.action=Allowed
+  | timechart(Vendor.urlsupercategory, limit=10)

@@ -1,4 +1,4 @@
-name: Web - Threat - CrowdStrike IOC Threat Actors Over Time by Server IP
+name: Zscaler - Threat - CrowdStrike IOC Threat Actors Over Time by Server IP
 visualization:
   options:
     connect-points: false
@@ -9,8 +9,8 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
-  | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+  #Vendor="zscaler" Vendor.product="NSS"
+  | ioc:lookup(field=Vendor.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
   | ioc.detected=true
   | case {
       ioc[0].labels=Actor*

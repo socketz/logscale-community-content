@@ -1,4 +1,4 @@
-name: Web - User Investigation
+name: Zscaler - User Investigation
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
@@ -10,7 +10,7 @@ widgets:
     x: 8
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | top(Vendor.proto)
     end: now
@@ -40,10 +40,9 @@ widgets:
     x: 0
     height: 5
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
-      | ioc:lookup(field=Vendor.domain, type=domain, confidenceThreshold=Unverified, strict=true)
+      | ioc:lookup(field=url.domain, type=domain, confidenceThreshold=Unverified, strict=true)
       | case {
           ioc[0].labels=Actor*
             | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
@@ -64,7 +63,7 @@ widgets:
     - conditions: null
       name: CrowdStrike IOC Threat Actors to Domain
       titleTemplate: 'Actor: {{ fields.source }}, Domain: {{ fields.target }}'
-      queryString: '#type=zscalernss-web|wildcard("*@*",ignoreCase=true,field=user.email)|regex("^(?<Vendor.domain>.*?)(\\/|$)",field=Vendor.eurl,strict=false)|ioc:lookup(field=Vendor.domain,type=domain,confidenceThreshold=Unverified,strict=true)|case
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|wildcard("*@*",ignoreCase=true,field=user.email)|ioc:lookup(field=url.domain,type=domain,confidenceThreshold=Unverified,strict=true)|case
         { ioc[0].labels=Actor*|regex("^Actor\\/(?<iocActor>\\w+)\\W+",field=ioc[0].labels,strict=false);*|iocActor
         := "None Listed"}|replace(",",with="\n",field=ioc[0].labels,as="IOC.Details")|rename(ioc[0].indicator,as="IOC.Domain")|rename(ioc[0].malicious_confidence,as="IOC.Confidence")|rename(iocActor,as="IOC.Actor")
         | IOC.Domain=?IOC_Domain IOC.Actor=?IOC_Actor '
@@ -83,10 +82,10 @@ widgets:
     x: 4
     height: 5
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | #Vendor.action=Blocked
-      | timechart(Vendor.urlsupercat, limit=10)
+      | Vendor.action=Blocked
+      | timechart(Vendor.urlsupercategory, limit=10)
     end: now
     start: 1d
     width: 4
@@ -94,13 +93,13 @@ widgets:
     interactions:
     - conditions: null
       name: Top Blocked Super Categories
-      titleTemplate: 'Category: {{ fields.Vendor.urlsupercat }}'
-      queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=user.email)|#Vendor.action=Blocked
-        | Vendor.urlsupercat=?Vendor_urlsupercat'
+      titleTemplate: 'Category: {{ fields.Vendor.urlsupercategory }}'
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|wildcard("*",ignoreCase=true,field=user.email)|Vendor.action=Blocked
+        | Vendor.urlsupercategory=?Vendor_urlsupercat'
       useWidgetTimeWindow: false
       repoOrViewName:
       arguments:
-        Vendor_urlsupercat: '["{{fields.Vendor.urlsupercat}}"]'
+        Vendor_urlsupercat: '["{{fields.Vendor.urlsupercategory}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -115,9 +114,9 @@ widgets:
     x: 9
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | ioc:lookup(field=Vendor.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
       | replace(",", with="\n", field=ioc[0].labels, as="IOC.Details")
       | rename(ioc[0].malicious_confidence, as="IOC.Confidence")
       | top(IOC.Confidence)
@@ -129,7 +128,7 @@ widgets:
     - conditions: null
       name: CrowdStrike IOC Hits on Server IP by Confidence
       titleTemplate: 'Confidence: {{ fields.IOC.Confidence }}'
-      queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.sip,type=ip_address,confidenceThreshold=Unverified,strict=true)|replace(",",with="\n",field=ioc[0].labels,as="IOC.Details")|rename(ioc[0].malicious_confidence,as="IOC.Confidence")
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|ioc:lookup(field=Vendor.serverip,type=ip_address,confidenceThreshold=Unverified,strict=true)|replace(",",with="\n",field=ioc[0].labels,as="IOC.Details")|rename(ioc[0].malicious_confidence,as="IOC.Confidence")
         | IOC.Confidence=?IOC_Confidence '
       useWidgetTimeWindow: false
       repoOrViewName:
@@ -149,9 +148,9 @@ widgets:
     x: 6
     height: 5
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | ioc:lookup(field=Vendor.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
       | ipLocation(ioc[0].indicator)
       | case {
           ioc[0].labels=Actor*
@@ -173,7 +172,7 @@ widgets:
     - conditions: null
       name: CrowdStrike IOC Threat Actors to Country by Server IP
       titleTemplate: 'Actor: {{ fields.source }}, Country: {{ fields.target }}'
-      queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.sip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ipLocation(ioc[0].indicator)|case
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|ioc:lookup(field=Vendor.serverip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ipLocation(ioc[0].indicator)|case
         { ioc[0].labels=Actor*|regex("^Actor\\/(?<iocActor>\\w+)\\W+",field=ioc[0].labels,strict=false);*|iocActor
         := "None Listed"}|replace(",",with="\n",field=ioc[0].labels,as="IOC.Details")|rename(ioc[0].indicator,as="IOC.IP")|rename(ioc[0].malicious_confidence,as="IOC.Confidence")|rename(iocActor,as="IOC.Actor")|rename(ioc[0].indicator.country,as="IOC.Country")
         | IOC.Country=?IOC_Country IOC.Actor=?IOC_Actor '
@@ -192,7 +191,7 @@ widgets:
     x: 4
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | top(Vendor.appname)
     end: now
@@ -222,12 +221,11 @@ widgets:
     x: 0
     height: 5
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | #Vendor.action=Blocked
-      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
-      | top([Vendor.urlcat, Vendor.domain])
-      | sankey(source="Vendor.urlcat", target="Vendor.domain")
+      | Vendor.action=Blocked
+      | top([Vendor.urlcategory, url.domain])
+      | sankey(source="Vendor.urlcategory", target="url.domain")
     visualization: sankey
     end: now
     start: 1d
@@ -237,13 +235,12 @@ widgets:
     - conditions: null
       name: Top Blocked Category to Hostname
       titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
-      queryString: '#Vendor.action=Blocked | Vendor.urlcat=?Vendor_urlcat | regex("^(?<Vendor.domain>.*?)(\/|$)",
-        field=Vendor.eurl, strict=false) | Vendor.domain=?Vendor_domain '
+      queryString: 'Vendor.action=Blocked | Vendor.urlcategory=?Vendor_urlcategory | url.domain=?url_domain'
       useWidgetTimeWindow: false
       repoOrViewName:
       arguments:
-        Vendor_domain: '["{{ fields.target }}"]'
-        Vendor_urlcat: '["{{ fields.source }}"]'
+        url_domain: '["{{ fields.target }}"]'
+        Vendor_urlcategory: '["{{ fields.source }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -254,9 +251,9 @@ widgets:
     x: 0
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | ioc:lookup(field=Vendor.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
       | ioc.detected=true
       | case {
           ioc[0].labels=Actor*
@@ -273,7 +270,7 @@ widgets:
     - conditions: null
       name: CrowdStrike IOC Hits on Server IP by Threat Actor
       titleTemplate: 'Actor: {{ fields.IOC.Actor }}'
-      queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.sip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ioc.detected=true|case
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|ioc:lookup(field=Vendor.serverip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ioc.detected=true|case
         { ioc[0].labels=Actor*|regex("^Actor\\/(?<iocActor>\\w+)\\W+",field=ioc[0].labels,strict=false);*|iocActor
         := "None Listed"}|rename(iocActor,as="IOC.Actor") | IOC.Actor=?IOC_Actor'
       useWidgetTimeWindow: false
@@ -295,9 +292,9 @@ widgets:
     y: 44
     height: 5
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | #Vendor.action=Allowed
+      | Vendor.action=Allowed
       | top(Vendor.eua, limit=100)
     visualization: table-view
     end: now
@@ -310,7 +307,7 @@ widgets:
     x: 6
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | timechart(http.request.method)
     end: now
@@ -340,7 +337,7 @@ widgets:
     x: 4
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | event.action = blocked
       | Vendor.dlpdict!="None"
@@ -353,7 +350,7 @@ widgets:
     - conditions: null
       name: Top Blocked DLP Dictionaries
       titleTemplate: 'DLP: {{ fields.Vendor.dlpdict }}'
-      queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=user.email)|event.action=blocked|Vendor.dlpdict!="None"
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|wildcard("*",ignoreCase=true,field=user.email)|event.action=blocked|Vendor.dlpdict!="None"
         | Vendor.dlpdict=?Vendor_dlpdict '
       useWidgetTimeWindow: false
       repoOrViewName:
@@ -373,11 +370,11 @@ widgets:
     x: 6
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | Vendor.threatname!="None"
-      | top([Vendor.urlcat, Vendor.threatname])
-      | sankey(source=Vendor.urlcat, target=Vendor.threatname)
+      | top([Vendor.urlcategory, Vendor.threatname])
+      | sankey(source=Vendor.urlcategory, target=Vendor.threatname)
     visualization: sankey
     end: now
     start: 1d
@@ -387,13 +384,13 @@ widgets:
     - conditions: null
       name: Top Vendor Categories to Threat Names
       titleTemplate: 'Category: {{ fields.source }}, Threat: {{ fields.target }}'
-      queryString: '#type=zscalernss-web|Vendor.threatname!="None" | Vendor.urlcat=?Vendor_urlcat
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|Vendor.threatname!="None" | Vendor.urlcategory=?Vendor_urlcategory
         Vendor.threatname=?Vendor_threatname '
       useWidgetTimeWindow: false
       repoOrViewName:
       arguments:
         Vendor_threatname: '["{{ fields.target }}"]'
-        Vendor_urlcat: '["{{ fields.source }}"]'
+        Vendor_urlcategory: '["{{ fields.source }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -404,7 +401,7 @@ widgets:
     x: 0
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | Vendor.threatname != "None"
       | top(Vendor.threatname)
@@ -435,12 +432,11 @@ widgets:
     x: 6
     height: 5
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
-      | #Vendor.action=Allowed
-      | top([Vendor.urlcat, Vendor.domain], limit=20)
-      | sankey(source="Vendor.urlcat", target="Vendor.domain")
+      | Vendor.action=Allowed
+      | top([Vendor.urlcategory, url.domain], limit=20)
+      | sankey(source="Vendor.urlcategory", target="url.domain")
     visualization: sankey
     end: now
     start: 1d
@@ -450,14 +446,12 @@ widgets:
     - conditions: null
       name: Top Allowed Categories to Domains
       titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
-      queryString: '#type=zscalernss-web|#Vendor.action=Allowed | Vendor.urlcat=?Vendor_urlcat
-        | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false) |
-        Vendor.domain=?Vendor_domain '
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|Vendor.action=Allowed | Vendor.urlcategory=?Vendor_urlcategory | url.domain=?url_domain'
       useWidgetTimeWindow: false
       repoOrViewName:
       arguments:
-        Vendor_domain: '["{{ fields.target }}"]'
-        Vendor_urlcat: '["{{ fields.source }}"]'
+        url_domain: '["{{ fields.target }}"]'
+        Vendor_urlcategory: '["{{ fields.source }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -469,10 +463,10 @@ widgets:
     y: 32
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | #Vendor.action=Blocked
-      | top(Vendor.urlcat)
+      | Vendor.action=Blocked
+      | top(Vendor.urlcategory)
     visualization: table-view
     end: now
     start: 1d
@@ -484,9 +478,9 @@ widgets:
     x: 0
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | timechart(user.email, function=sum(Vendor.reqsize), limit=10)
+      | timechart(user.email, function=sum(Vendor.requestsize), limit=10)
     end: now
     start: 1d
     width: 6
@@ -495,7 +489,7 @@ widgets:
     - conditions: null
       name: Top Users by Volume
       titleTemplate: 'User: {{ fields.user.email }}'
-      queryString: '#type=zscalernss-web | user.email=?user_email'
+      queryString: '#Vendor="zscaler" Vendor.product="NSS" | user.email=?user_email'
       useWidgetTimeWindow: false
       repoOrViewName:
       arguments:
@@ -515,7 +509,7 @@ widgets:
     y: 40
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | count("Vendor.location", distinct=true)
     end: now
@@ -531,9 +525,9 @@ widgets:
     x: 6
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | ioc:lookup(field=Vendor.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
       | ipLocation(ioc[0].indicator)
       | rename(ioc[0].indicator.country, as="IOC.Country")
       | top(IOC.Country)
@@ -545,7 +539,7 @@ widgets:
     - conditions: null
       name: CrowdStrike IOC Hits on Server IP by Country
       titleTemplate: 'Country: {{ fields.IOC.Country }}'
-      queryString: '#type=zscalernss-web|ioc:lookup(field=Vendor.sip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ipLocation(ioc[0].indicator)|rename(ioc[0].indicator.country,as="IOC.Country")
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|ioc:lookup(field=Vendor.serverip,type=ip_address,confidenceThreshold=Unverified,strict=true)|ipLocation(ioc[0].indicator)|rename(ioc[0].indicator.country,as="IOC.Country")
         | IOC.Country=?IOC_Country '
       useWidgetTimeWindow: false
       repoOrViewName:
@@ -566,7 +560,7 @@ widgets:
     y: 40
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | count(user.email, distinct=true)
     end: now
@@ -583,11 +577,10 @@ widgets:
     y: 32
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
-      | #Vendor.action=Allowed
-      | top([Vendor.domain])
+      | Vendor.action=Allowed
+      | top([url.domain])
     visualization: table-view
     end: now
     start: 1d
@@ -599,10 +592,10 @@ widgets:
     x: 0
     height: 5
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | #Vendor.action=Allowed
-      | timechart(Vendor.urlsupercat, limit=10)
+      | Vendor.action=Allowed
+      | timechart(Vendor.urlsupercategory, limit=10)
     end: now
     start: 1d
     width: 4
@@ -610,13 +603,13 @@ widgets:
     interactions:
     - conditions: null
       name: Top Allowed Super Categories
-      titleTemplate: 'Category: {{ fields.Vendor.urlsupercat }}'
-      queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=user.email)|#Vendor.action=Allowed
-        | Vendor.urlsupercat=?Vendor_urlsupercat'
+      titleTemplate: 'Category: {{ fields.Vendor.urlsupercategory }}'
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|wildcard("*",ignoreCase=true,field=user.email)|Vendor.action=Allowed
+        | Vendor.urlsupercategory=?Vendor_urlsupercat'
       useWidgetTimeWindow: false
       repoOrViewName:
       arguments:
-        Vendor_urlsupercat: '["{{fields.Vendor.urlsupercat}}"]'
+        Vendor_urlsupercat: '["{{fields.Vendor.urlsupercategory}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -632,10 +625,9 @@ widgets:
     y: 22
     height: 5
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
-      | ioc:lookup(field=Vendor.domain, type=domain, confidenceThreshold=Unverified, strict=true)
+      | ioc:lookup(field=url.domain, type=domain, confidenceThreshold=Unverified, strict=true)
       | case {
           ioc[0].labels=Actor*
             | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;
@@ -658,11 +650,10 @@ widgets:
     y: 32
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
-      | #Vendor.action=Blocked
-      | top([Vendor.domain])
+      | Vendor.action=Blocked
+      | top([url.domain])
     visualization: table-view
     end: now
     start: 1d
@@ -675,10 +666,10 @@ widgets:
     y: 32
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | #Vendor.action=Allowed
-      | top(Vendor.urlcat)
+      | Vendor.action=Allowed
+      | top(Vendor.urlcategory)
     visualization: table-view
     end: now
     start: 1d
@@ -690,7 +681,7 @@ widgets:
     x: 0
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | Vendor.threatname!="None"
       | timechart(Vendor.threatname, limit=10)
@@ -702,7 +693,7 @@ widgets:
     - conditions: null
       name: Top Vendor Threat Names
       titleTemplate: 'Threat: {{ fields.Vendor.threatname }}'
-      queryString: '#type=zscalernss-web|Vendor.threatname!="None" | Vendor.threatname=?Vendor_threatname'
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|Vendor.threatname!="None" | Vendor.threatname=?Vendor_threatname'
       useWidgetTimeWindow: false
       repoOrViewName:
       arguments:
@@ -721,7 +712,7 @@ widgets:
     x: 0
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | top(Vendor.appclass)
     end: now
@@ -753,9 +744,9 @@ widgets:
     y: 17
     height: 5
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+      | ioc:lookup(field=Vendor.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
       | ipLocation(ioc[0].indicator)
       | case {
           ioc[0].labels=Actor*
@@ -779,10 +770,10 @@ widgets:
     x: 6
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | Vendor.reqsize!=0
-      | timechart(#Vendor.action, function=sum(Vendor.reqsize))
+      | Vendor.requestsize!=0
+      | timechart(Vendor.action, function=sum(Vendor.requestsize))
     end: now
     start: 1d
     width: 6
@@ -790,12 +781,12 @@ widgets:
     interactions:
     - conditions: null
       name: Actions Over Time by Volume
-      titleTemplate: 'Action: {{ fields.#Vendor.action }}'
-      queryString: '#type="zscalernss-web"|Vendor.reqsize!=0 | #Vendor.action=?Vendor_action'
+      titleTemplate: 'Action: {{ fields.Vendor.action }}'
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|Vendor.requestsize!=0 | Vendor.action=?Vendor_action'
       useWidgetTimeWindow: false
       repoOrViewName:
       arguments:
-        Vendor_action: '["{{fields.#Vendor.action}}"]'
+        Vendor_action: '["{{fields.Vendor.action}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -810,11 +801,11 @@ widgets:
     x: 8
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | event.action=blocked
-      | Vendor.dlpeng!="None"
-      | top(Vendor.dlpeng)
+      | Vendor.dlpengine!="None"
+      | top(Vendor.dlpengine)
     end: now
     start: 1d
     width: 4
@@ -822,13 +813,13 @@ widgets:
     interactions:
     - conditions: null
       name: Top Blocked DLP Engines
-      titleTemplate: 'Engine: {{ fields.Vendor.dlpeng }}'
-      queryString: '#type=zscalernss-web|event.action=blocked|Vendor.dlpeng!="None"
-        | Vendor.dlpeng=?Vendor_dlpeng '
+      titleTemplate: 'Engine: {{ fields.Vendor.dlpengine }}'
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|event.action=blocked|Vendor.dlpengine!="None"
+        | Vendor.dlpengine=?Vendor_dlpengine '
       useWidgetTimeWindow: false
       repoOrViewName:
       arguments:
-        Vendor_dlpeng: '["{{fields.Vendor.dlpeng}}"]'
+        Vendor_dlpengine: '["{{fields.Vendor.dlpengine}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink

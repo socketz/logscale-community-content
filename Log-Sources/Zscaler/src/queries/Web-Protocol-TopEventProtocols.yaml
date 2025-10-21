@@ -1,4 +1,4 @@
-name: Web - Protocol - Top Event Protocols
+name: Zscaler - Protocol - Top Event Protocols
 visualization:
   options: {}
   type: pie-chart
@@ -7,5 +7,5 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
+  #Vendor="zscaler" Vendor.product="NSS"ndor.product="NSS"
   | top(Vendor.proto)

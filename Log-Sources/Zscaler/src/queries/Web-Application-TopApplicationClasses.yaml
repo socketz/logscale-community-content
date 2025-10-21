@@ -1,4 +1,4 @@
-name: Web - Application - Top Application Classes
+name: Zscaler - Application - Top Application Classes
 visualization:
   options: {}
   type: pie-chart
@@ -7,5 +7,5 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
+  #Vendor="zscaler" Vendor.product="NSS"
   | top(Vendor.appclass)

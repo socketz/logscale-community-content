@@ -1,4 +1,4 @@
-name: Web - Threat - CrowdStrike IOC Threat Actors to Domains
+name: Zscaler - Threat - CrowdStrike IOC Threat Actors to Domains
 visualization:
   options: {}
   type: sankey
@@ -7,9 +7,8 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
-  | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
-  | ioc:lookup(field=Vendor.domain, type=domain, confidenceThreshold=Unverified, strict=true)
+  #Vendor="zscaler" Vendor.product="NSS"
+  | ioc:lookup(field=url.domain, type=domain, confidenceThreshold=Unverified, strict=true)
   | case {
       ioc[0].labels=Actor*
         | regex("^Actor\/(?<iocActor>\w+)\W+", field=ioc[0].labels, strict=false) ;

@@ -1,4 +1,4 @@
-name: Web - URL - Top Blocked Domains and Categories
+name: Zscaler - URL - Top Blocked Domains and Categories
 visualization:
   options: {}
   type: table-view
@@ -7,7 +7,6 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
-  | #Vendor.action=Blocked
-  | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
-  | top([Vendor.domain, Vendor.urlcat])
+  #Vendor="zscaler" Vendor.product="NSS"
+  | Vendor.action=Blocked
+  | top([url.domain, Vendor.urlcategory])

@@ -1,4 +1,4 @@
-name: Web - Protocol - Request Methods Over Time
+name: Zscaler - Protocol - Request Methods Over Time
 visualization:
   options:
     connect-points: false
@@ -9,5 +9,5 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
+  #Vendor="zscaler" Vendor.product="NSS"
   | timechart(http.request.method)

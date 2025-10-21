@@ -1,4 +1,4 @@
-name: Web - Threat - Top Vendor Threat Names
+name: Zscaler - Threat - Top Vendor Threat Names
 visualization:
   options: {}
   type: table-view
@@ -7,6 +7,6 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
+  #Vendor="zscaler" Vendor.product="NSS"
   | Vendor.threatname!="None"
   | top(Vendor.threatname)

@@ -1,4 +1,4 @@
-name: Web - Threat - Top Vendor Threat Names Over Time
+name: Zscaler - Threat - Top Vendor Threat Names Over Time
 visualization:
   options:
     connect-points: false
@@ -9,6 +9,6 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
+  #Vendor="zscaler" Vendor.product="NSS"
   | Vendor.threatname!="None"
   | timechart(Vendor.threatname, limit=10)

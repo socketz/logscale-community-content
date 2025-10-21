@@ -1,4 +1,4 @@
-name: Web - Threat - CrowdStrike IOC Hits on Server IP by Country
+name: Zscaler - Threat - CrowdStrike IOC Hits on Server IP by Country
 visualization:
   options: {}
   type: pie-chart
@@ -7,8 +7,8 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
-  | ioc:lookup(field=Vendor.sip, type=ip_address, confidenceThreshold=Unverified, strict=true)
+  #Vendor="zscaler" Vendor.product="NSS"
+  | ioc:lookup(field=Vendor.serverip, type=ip_address, confidenceThreshold=Unverified, strict=true)
   | ipLocation(ioc[0].indicator)
   | rename(ioc[0].indicator.country, as="IOC.Country")
   | top(IOC.Country)

@@ -1,4 +1,4 @@
-name: Web - URL - Top Allowed Domains
+name: Zscaler - URL - Top Allowed Domains
 visualization:
   options: {}
   type: table-view
@@ -7,7 +7,6 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
-  | #Vendor.action=Allowed
-  | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
-  | top([Vendor.domain])
+  #Vendor="zscaler" Vendor.product="NSS"
+  | Vendor.action=Allowed
+  | top([url.domain])

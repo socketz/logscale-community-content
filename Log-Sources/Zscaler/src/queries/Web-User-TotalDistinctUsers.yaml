@@ -1,4 +1,4 @@
-name: Web - User - Total Distinct Users
+name: Zscaler - User - Total Distinct Users
 visualization:
   options: {}
   type: single-value
@@ -7,5 +7,5 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type="zscalernss-web"
+  #Vendor="zscaler" Vendor.product="NSS"
   | count(user.email, distinct=true)

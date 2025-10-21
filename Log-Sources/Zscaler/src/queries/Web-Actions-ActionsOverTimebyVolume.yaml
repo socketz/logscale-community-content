@@ -1,4 +1,4 @@
-name: Web - Actions - Actions Over Time by Volume
+name: Zscaler - Actions - Actions Over Time by Volume
 visualization:
   options:
     connect-points: false
@@ -9,6 +9,6 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type = "zscalernss-web"
-  | Vendor.reqsize!=0
-  | timechart(#Vendor.action, function=sum(Vendor.reqsize))
+  #Vendor="zscaler" Vendor.product="NSS"
+  | Vendor.requestsize!=0
+  | timechart(Vendor.action, function=sum(Vendor.requestsize))

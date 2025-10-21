@@ -1,4 +1,4 @@
-name: Web - URL - Top Blocked Categories
+name: Zscaler - URL - Top Blocked Categories
 visualization:
   options: {}
   type: table-view
@@ -7,6 +7,6 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
-  | #Vendor.action=Blocked
-  | top(Vendor.urlcat)
+  #Vendor="zscaler" Vendor.product="NSS"
+  | Vendor.action=Blocked
+  | top(Vendor.urlcategory)

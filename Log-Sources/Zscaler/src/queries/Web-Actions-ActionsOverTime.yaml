@@ -1,4 +1,4 @@
-name: Web - Actions - Actions Over Time
+name: Zscaler - Actions - Actions Over Time
 visualization:
   options:
     connect-points: false
@@ -8,5 +8,5 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
-  | timechart(#Vendor.action)
+  #Vendor="zscaler" Vendor.product="NSS"
+  | timechart(Vendor.action)

@@ -1,4 +1,4 @@
-name: Web - User - Total Distinct Locations
+name: Zscaler - User - Total Distinct Locations
 visualization:
   options: {}
   type: single-value
@@ -7,5 +7,5 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type="zscalernss-web"
+  #Vendor="zscaler" Vendor.product="NSS"
   | count("Vendor.location", distinct=true)

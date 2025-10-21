@@ -1,31 +1,32 @@
-name: Web - Web Activity
+name: Zscaler - Web Activity
 updateFrequency: never
 timeSelector: {}
 sharedTimeInterval:
   enabled: true
   isLive: false
   start: 1d
+labels:
+- Zscaler
+- endpoint
 widgets:
   6277dbd0-1cf0-43ee-b1bb-e3a85097d3c6:
     x: 8
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | top(Vendor.proto)
+      | top(Vendor.protocol)
     end: now
     start: 1d
     width: 4
     y: 13
     interactions:
-    - conditions: null
-      name: Top Protocols
-      titleTemplate: 'Protocol: {{ fields.Vendor.proto }}'
-      queryString: 'Vendor.proto=?Vendor_proto '
+    - name: Top Protocols
+      titleTemplate: 'Protocol: {{ fields.Vendor.protocol }}'
+      queryString: Vendor.protocol=?Vendor_protocol
       useWidgetTimeWindow: false
-      repoOrViewName:
       arguments:
-        Vendor_proto: '["{{fields.Vendor.proto}}"]'
+        Vendor_protocol: '["{{fields.Vendor.protocol}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -40,24 +41,22 @@ widgets:
     x: 4
     height: 5
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | #Vendor.action=Blocked
-      | timechart(Vendor.urlsupercat, limit=10)
+      | Vendor.action=Blocked
+      | timechart(Vendor.urlsupercategory, limit=10)
     end: now
     start: 1d
     width: 4
     y: 21
     interactions:
-    - conditions: null
-      name: Top Blocked Super Categories
-      titleTemplate: 'Category: {{ fields.Vendor.urlsupercat }}'
-      queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=user.email)|#Vendor.action=Blocked
-        | Vendor.urlsupercat=?Vendor_urlsupercat'
+    - name: Top Blocked Super Categories
+      titleTemplate: 'Category: {{ fields.Vendor.urlsupercategory }}'
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|wildcard("*",ignoreCase=true,field=user.email)|Vendor.action=Blocked
+        | Vendor.urlsupercategory=?Vendor_urlsupercategory'
       useWidgetTimeWindow: false
-      repoOrViewName:
       arguments:
-        Vendor_urlsupercat: '["{{fields.Vendor.urlsupercat}}"]'
+        Vendor_urlsupercategory: '["{{fields.Vendor.urlsupercategory}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -72,7 +71,7 @@ widgets:
     x: 4
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | top(Vendor.appname)
     end: now
@@ -80,12 +79,10 @@ widgets:
     width: 4
     y: 13
     interactions:
-    - conditions: null
-      name: Top Application Names
+    - name: Top Application Names
       titleTemplate: 'Application: {{ fields.Vendor.appname }}'
       queryString: 'Vendor.appname=?Vendor_appname '
       useWidgetTimeWindow: false
-      repoOrViewName:
       arguments:
         Vendor_appname: '["{{fields.Vendor.appname}}"]'
       openInNewTab: true
@@ -103,7 +100,7 @@ widgets:
     y: 17
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | count(user.email, distinct=true)
     end: now
@@ -119,28 +116,25 @@ widgets:
     x: 0
     height: 5
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
-      | #Vendor.action=Blocked
-      | top([Vendor.urlcat, Vendor.domain])
-      | sankey(source="Vendor.urlcat", target="Vendor.domain")
+      | Vendor.action=Blocked
+      | top([Vendor.urlcategory, url.domain])
+      | sankey(source="Vendor.urlcategory", target="url.domain")
     visualization: sankey
     end: now
     start: 1d
     width: 6
     y: 4
     interactions:
-    - conditions: null
-      name: Top Blocked Category to Hostname
+    - name: Top Blocked Category to Hostname
       titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
-      queryString: '#Vendor.action=Blocked | Vendor.urlcat=?Vendor_urlcat | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false) |
-        Vendor.domain=?Vendor_domain '
+      queryString: 'Vendor.action=Blocked | Vendor.urlcategory=?Vendor_urlcategory
+        | url.domain=?url_domain '
       useWidgetTimeWindow: false
-      repoOrViewName:
       arguments:
-        Vendor_domain: '["{{ fields.target }}"]'
-        Vendor_urlcat: '["{{ fields.source }}"]'
+        url_domain: '["{{ fields.target }}"]'
+        Vendor_urlcategory: '["{{ fields.source }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -151,7 +145,7 @@ widgets:
     x: 0
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | top(Vendor.appclass)
     end: now
@@ -159,14 +153,12 @@ widgets:
     width: 4
     y: 13
     interactions:
-    - conditions: null
-      name: Top Application Classes
+    - name: Top Application Classes
       titleTemplate: 'Application: {{ fields.appclass }}'
-      queryString: 'event.appclass=?event_appclass '
+      queryString: Vendor.appclass=?Vendor_appclass
       useWidgetTimeWindow: false
-      repoOrViewName:
       arguments:
-        event_appclass: '["{{fields.appclass}}"]'
+        Vendor_appclass: '["{{fields.Vendor.appclass}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -183,14 +175,18 @@ widgets:
     y: 21
     height: 5
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | #Vendor.action=Allowed
-      | top(Vendor.eua, limit=100)
-    visualization: table-view
+      | Vendor.action=Allowed
+      | top(Vendor.useragent, limit=100)
     end: now
     start: 1d
     width: 4
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Top User Agents
     isLive: false
     type: query
@@ -198,7 +194,7 @@ widgets:
     x: 6
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | timechart(http.request.method)
     end: now
@@ -206,12 +202,10 @@ widgets:
     width: 6
     y: 17
     interactions:
-    - conditions: null
-      name: Request Methods
+    - name: Request Methods
       titleTemplate: 'Method: {{ fields.http.request.method }}'
       queryString: http.request.method=?http_request_method
       useWidgetTimeWindow: false
-      repoOrViewName:
       arguments:
         http_request_method: '["{{fields.http.request.method}}"]'
       openInNewTab: true
@@ -228,23 +222,21 @@ widgets:
     x: 6
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | Vendor.reqsize!=0
-      | timechart(#Vendor.action, function=sum(Vendor.reqsize))
+      | Vendor.requestsize!=0
+      | timechart(Vendor.action, function=sum(Vendor.requestsize))
     end: now
     start: 1d
     width: 6
     y: 0
     interactions:
-    - conditions: null
-      name: Actions Over Time by Volume
-      titleTemplate: 'Action: {{ fields.#Vendor.action }}'
-      queryString: '#type="zscalernss-web"|Vendor.reqsize!=0 | #Vendor.action=?Vendor_action'
+    - name: Actions Over Time by Volume
+      titleTemplate: 'Action: {{ fields.Vendor.action }}'
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|Vendor.requestsize!=0 | Vendor.action=?Vendor_action'
       useWidgetTimeWindow: false
-      repoOrViewName:
       arguments:
-        Vendor_action: '["{{fields.#Vendor.action}}"]'
+        Vendor_action: '["{{fields.Vendor.action}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -259,28 +251,25 @@ widgets:
     x: 6
     height: 5
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
-      | #Vendor.action=Allowed
-      | top([Vendor.urlcat, Vendor.domain], limit=20)
-      | sankey(source="Vendor.urlcat", target="Vendor.domain")
+      | Vendor.action=Allowed
+      | top([Vendor.urlcategory, url.domain], limit=20)
+      | sankey(source="Vendor.urlcategory", target="url.domain")
     visualization: sankey
     end: now
     start: 1d
     width: 6
     y: 4
     interactions:
-    - conditions: null
-      name: Top Allowed Categories to Domains
+    - name: Top Allowed Categories to Domains
       titleTemplate: 'Category: {{ fields.source }}, Hostname: {{ fields.target }}'
-      queryString: '#type=zscalernss-web|#Vendor.action=Allowed | Vendor.urlcat=?Vendor_urlcat | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false) |
-        Vendor.domain=?Vendor_domain '
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|Vendor.action=Allowed |
+        Vendor.urlcategory=?Vendor_urlcategory | url.domain=?url_domain '
       useWidgetTimeWindow: false
-      repoOrViewName:
       arguments:
-        Vendor_domain: '["{{ fields.target }}"]'
-        Vendor_urlcat: '["{{ fields.source }}"]'
+        url_domain: '["{{ fields.target }}"]'
+        Vendor_urlcategory: '["{{ fields.source }}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -292,14 +281,18 @@ widgets:
     y: 9
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | #Vendor.action=Blocked
-      | top(Vendor.urlcat)
-    visualization: table-view
+      | Vendor.action=Blocked
+      | top(Vendor.urlcategory)
     end: now
     start: 1d
     width: 3
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Top Blocked Categories
     isLive: false
     type: query
@@ -307,20 +300,18 @@ widgets:
     x: 0
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | timechart(user.email, function=sum(Vendor.reqsize), limit=10)
+      | timechart(user.email, function=sum(Vendor.requestsize), limit=10)
     end: now
     start: 1d
     width: 6
     y: 0
     interactions:
-    - conditions: null
-      name: Top Users by Volume
+    - name: Top Users by Volume
       titleTemplate: 'User: {{ fields.user.email }}'
-      queryString: '#type=zscalernss-web | user.email=?user_email'
+      queryString: '#Vendor="zscaler" Vendor.product="NSS" | user.email=?user_email'
       useWidgetTimeWindow: false
-      repoOrViewName:
       arguments:
         user_email: '["{{fields.user.email}}"]'
       openInNewTab: true
@@ -338,7 +329,7 @@ widgets:
     y: 17
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
       | count("Vendor.location", distinct=true)
     end: now
@@ -355,15 +346,18 @@ widgets:
     y: 9
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
-      | #Vendor.action=Allowed
-      | top([Vendor.domain])
-    visualization: table-view
+      | Vendor.action=Allowed
+      | top([url.domain])
     end: now
     start: 1d
     width: 3
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Top Allowed Domains
     isLive: false
     type: query
@@ -371,24 +365,22 @@ widgets:
     x: 0
     height: 5
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | #Vendor.action=Allowed
-      | timechart(Vendor.urlsupercat, limit=10)
+      | Vendor.action=Allowed
+      | timechart(Vendor.urlsupercategory, limit=10)
     end: now
     start: 1d
     width: 4
     y: 21
     interactions:
-    - conditions: null
-      name: Top Allowed Super Categories
-      titleTemplate: 'Category: {{ fields.Vendor.urlsupercat }}'
-      queryString: '#type=zscalernss-web|wildcard("*",ignoreCase=true,field=user.email)|#Vendor.action=Allowed
-        | Vendor.urlsupercat=?Vendor_urlsupercat'
+    - name: Top Allowed Super Categories
+      titleTemplate: 'Category: {{ fields.Vendor.urlsupercategory }}'
+      queryString: '#Vendor="zscaler" Vendor.product="NSS"|wildcard("*",ignoreCase=true,field=user.email)|Vendor.action=Allowed
+        | Vendor.urlsupercategory=?Vendor_urlsupercategory'
       useWidgetTimeWindow: false
-      repoOrViewName:
       arguments:
-        Vendor_urlsupercat: '["{{fields.Vendor.urlsupercat}}"]'
+        Vendor_urlsupercategory: '["{{fields.Vendor.urlsupercategory}}"]'
       openInNewTab: true
       isLive: false
       type: searchlink
@@ -404,15 +396,18 @@ widgets:
     y: 9
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | regex("^(?<Vendor.domain>.*?)(\/|$)", field=Vendor.eurl, strict=false)
-      | #Vendor.action=Blocked
-      | top([Vendor.domain])
-    visualization: table-view
+      | Vendor.action=Blocked
+      | top([url.domain])
     end: now
     start: 1d
     width: 3
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Top Blocked Domains
     isLive: false
     type: query
@@ -421,21 +416,26 @@ widgets:
     y: 9
     height: 4
     queryString: |-
-      #type=zscalernss-web
+      #Vendor="zscaler" Vendor.product="NSS"
       | user.email=~wildcard(?Username, ignoreCase=true)
-      | #Vendor.action=Allowed
-      | top(Vendor.urlcat)
-    visualization: table-view
+      | Vendor.action=Allowed
+      | top(Vendor.urlcategory)
     end: now
     start: 1d
     width: 3
+    options:
+      cell-overflow: wrap-text
+      configured-columns: {}
+      row-numbers-enabled: false
+    visualization: table-view
     title: Top Allowed Categories
     isLive: false
     type: query
-$schema: https://schemas.humio.com/dashboard/v0.12.0
+$schema: https://schemas.humio.com/dashboard/v0.20.0
 parameters:
   Username:
-    defaultValue: '*'
     label: Username
     order: 50
     type: text
+    defaultValue: '*'
+    width: 1

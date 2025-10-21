@@ -1,4 +1,4 @@
-name: Web - Protocol - POST Total Traffic Volume in GB
+name: Zscaler - Protocol - POST Total Traffic Volume in GB
 visualization:
   options:
     default: {}
@@ -8,10 +8,10 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type = "zscalernss-web"
-  | Vendor.reqsize!=0
+  #Vendor="zscaler" Vendor.product="NSS"
+  | Vendor.requestsize!=0
   | http.request.method=POST
-  | thisBytes:=sum(Vendor.reqsize)
+  | thisBytes:=sum(Vendor.requestsize)
   | unit:convert(thisBytes, to="G", as=thisGB)
   | format("%.1f GB", field=thisGB, as=thisGB)
   | drop([_sum, thisBytes])

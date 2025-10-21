@@ -1,4 +1,4 @@
-name: Web - Threat - Top Blocked DLP Engines
+name: Zscaler - Threat - Top Blocked DLP Engines
 visualization:
   options: {}
   type: table-view
@@ -7,7 +7,7 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
+  #Vendor="zscaler" Vendor.product="NSS"
   | event.action=blocked
-  | Vendor.dlpeng!="None"
-  | top(Vendor.dlpeng)
+  | Vendor.dlpengine!="None"
+  | top(Vendor.dlpengine)

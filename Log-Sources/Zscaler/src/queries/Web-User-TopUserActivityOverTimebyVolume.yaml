@@ -1,4 +1,4 @@
-name: Web - User - Top User Activity Over Time by Volume
+name: Zscaler - User - Top User Activity Over Time by Volume
 visualization:
   options:
     connect-points: false
@@ -9,5 +9,5 @@ timeInterval:
   isLive: false
   start: 1d
 queryString: |-
-  #type=zscalernss-web
-  | timechart(user.email, function=sum(Vendor.reqsize), limit=10)
+  #Vendor="zscaler" Vendor.product="NSS"
+  | timechart(user.email, function=sum(Vendor.requestsize), limit=10)
