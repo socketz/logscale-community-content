@@ -4,7 +4,7 @@ interaction:
   - argument: ''
     fieldName: user.email
     operator: present
-  name: Investigate - Username
+  name: Zscaler - Investigate - Username
   titleTemplate: ''
   useWidgetTimeWindow: false
   dashboardReference:
