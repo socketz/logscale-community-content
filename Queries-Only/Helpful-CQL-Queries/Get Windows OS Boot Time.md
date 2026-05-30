@@ -2,11 +2,8 @@
 // Get Event Required on Windows Platform
 #event_simpleName=AgentOnline event_platform=Win
 
-// Convert BastTime in epoch Time Stamp
+// Convert BaseTime in epoch Time Stamp
 | realBootTime := (((BaseTime/1000)*1024)+978307200)*1000
-
-// Round realBootTime to Remove Decimal Place
-| round("realBootTime")
 
 // Determine Uptime in Days
 | uptimeDays := (now()-(realBootTime))/1000/60/60/24
